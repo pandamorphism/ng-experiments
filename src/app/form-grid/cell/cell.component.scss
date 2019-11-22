@@ -1,0 +1,16 @@
+.cell {
+  width: 100px;
+  height: 25px;
+  padding: 5px 0 0 3px;
+  overflow: hidden;
+  border: 1px solid silver;
+}
+
+:host-context(.ng-invalid) .cell {
+  border-color: red;
+  outline: none;
+}
+
+
+
+

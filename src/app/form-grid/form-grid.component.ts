@@ -1,38 +1,30 @@
-import {Component, forwardRef, OnInit} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {Component, Input, OnInit} from '@angular/core';
+import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 
-export const FORM_GRID_VALUE_ACCESSOR: any = {
-  provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => FormGridComponent),
-  multi: true,
-};
 
 @Component({
   selector: 'app-form-grid',
-  providers: [FORM_GRID_VALUE_ACCESSOR],
   templateUrl: './form-grid.component.html',
   styleUrls: ['./form-grid.component.scss']
 })
-export class FormGridComponent implements OnInit, ControlValueAccessor {
+export class FormGridComponent implements OnInit {
   header: string[];
   entities: any[];
   onChange;
+  form: FormGroup;
+  @Input() formGroupArray: FormArray;
+
+  constructor(private fb: FormBuilder) {
+  }
 
   ngOnInit(): void {
-
+    console.log('input: %O', this.formGroupArray);
+    this.form = this.fb.group({
+      array: this.formGroupArray
+    });
   }
 
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
-  }
-
-  registerOnTouched(fn: any): void {
-  }
-
-  setDisabledState(isDisabled: boolean): void {
-  }
-
-  writeValue(obj: any[]): void {
-    this.entities = obj;
+  get array(): FormArray {
+    return this.form.get('array') as FormArray;
   }
 }

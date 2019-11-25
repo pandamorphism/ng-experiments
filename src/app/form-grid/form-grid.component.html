@@ -1,3 +1,12 @@
-<ng-container *ngIf="entities?.controls?.length">
-  <div>Preved</div>
+<ng-container *ngIf="formGroupArray && formGroupArray.length">
+  <div [formGroup]="form">
+    <div formArrayName="array" *ngFor="let fg of array.controls; let i = index" class="row">
+      <ng-container [formGroupName]="i">
+        <app-cell formControlName="firstName"></app-cell>
+        <app-cell formControlName="lastName"></app-cell>
+        <app-cell formControlName="email"></app-cell>
+        <app-cell formControlName="age"></app-cell>
+      </ng-container>
+    </div>
+  </div>
 </ng-container>

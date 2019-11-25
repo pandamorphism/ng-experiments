@@ -42,4 +42,7 @@ export class CellComponent implements OnInit, ControlValueAccessor {
     this.renderer.setProperty(div, 'textContent', obj);
   }
 
+  onInput($event) {
+    this.onChange($event.target.textContent);
+  }
 }

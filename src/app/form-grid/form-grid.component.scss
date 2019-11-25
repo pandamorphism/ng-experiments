@@ -6,3 +6,21 @@
     margin-left: 20px;
   }
 }
+
+.row {
+  display: flex;
+}
+
+::ng-deep app-cell.ng-invalid.ng-dirty .cell {
+  background-color: #FEF7F8;
+  border: 1px solid red !important;
+  outline: none;
+}
+
+::ng-deep app-cell:not(:first-child) .cell {
+  border-left: none;
+}
+
+.row:not(:first-child) ::ng-deep app-cell .cell {
+  border-top: none;
+}

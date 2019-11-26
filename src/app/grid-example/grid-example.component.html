@@ -1,0 +1,14 @@
+<div style="margin-bottom: 20px;" (click)="formClick.emit(theForm)">Simple FormGrid Example</div>
+<button (click)="addUser()">Add</button>
+<button (click)="getFormValue()">Get Form Results</button>
+<div [formGroup]="theForm">
+  <input type="text" formControlName="id" style="margin-bottom: 20px;">
+
+  <app-form-grid formControlName="users">
+    <div grid-meta>
+      <div class="t-header" *gridMetadata="'firstName'">First Name</div>
+      <div class="t-header" *gridMetadata="'lastName'">Last Name</div>
+      <div class="t-header" *gridMetadata="'emailName'">Email</div>
+    </div>
+  </app-form-grid>
+</div>

@@ -1,0 +1,7 @@
+<ng-container [formGroup]="row">
+  <div class="row">
+    <ng-container *ngFor="let colName of columns">
+      <form-grid-cell [formControlName]="colName"></form-grid-cell>
+    </ng-container>
+  </div>
+</ng-container>

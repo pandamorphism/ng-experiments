@@ -1,6 +1,7 @@
 {
   "extends": "tslint:recommended",
   "rules": {
+    "interface-over-type-literal": false,
     "array-type": false,
     "arrow-parens": false,
     "deprecation": {
@@ -12,13 +13,13 @@
     "directive-selector": [
       true,
       "attribute",
-      "app",
+      "",
       "camelCase"
     ],
     "component-selector": [
       true,
       "element",
-      "app",
+      "",
       "kebab-case"
     ],
     "import-blacklist": [

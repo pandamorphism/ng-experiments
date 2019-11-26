@@ -1,12 +1,19 @@
-<ng-container *ngIf="formGroupArray && formGroupArray.length">
-  <div [formGroup]="form">
-    <div formArrayName="array" *ngFor="let fg of array.controls; let i = index" class="row">
-      <ng-container [formGroupName]="i">
-        <app-cell formControlName="firstName"></app-cell>
-        <app-cell formControlName="lastName"></app-cell>
-        <app-cell formControlName="email"></app-cell>
-        <app-cell formControlName="age"></app-cell>
-      </ng-container>
+<ng-content select="grid-meta"></ng-content>
+
+<div class="header" *ngIf="form.controls?.length;else noData">
+  <ng-container *ngFor="let tplRef of gridMetadata">
+    <div class="hCell">
+      <ng-container *ngTemplateOutlet="tplRef.template"></ng-container>
     </div>
-  </div>
-</ng-container>
+  </ng-container>
+</div>
+
+
+<form [formGroup]="form" novalidate>
+  <ng-container *ngFor="let fControl of form.controls" class="row">
+    <form-grid-row [columns]="columns" [formControl]="fControl"></form-grid-row>
+  </ng-container>
+</form>
+<ng-template #noData>
+  <div>No data available</div>
+</ng-template>

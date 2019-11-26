@@ -8,13 +8,12 @@ export const CELL_VALUE_ACCESSOR: any = {
 };
 
 @Component({
-  selector: 'app-cell',
+  selector: 'form-grid-cell',
   providers: [CELL_VALUE_ACCESSOR],
   templateUrl: './cell.component.html',
   styleUrls: ['./cell.component.scss']
 })
 export class CellComponent implements OnInit, ControlValueAccessor {
-
   @ViewChild('cell', {static: true}) cell;
   onChange;
 
@@ -22,6 +21,10 @@ export class CellComponent implements OnInit, ControlValueAccessor {
   }
 
   ngOnInit() {
+  }
+
+  onInput($event) {
+    this.onChange($event.target.textContent);
   }
 
   registerOnChange(fn: any): void {
@@ -38,11 +41,8 @@ export class CellComponent implements OnInit, ControlValueAccessor {
   }
 
   writeValue(obj: any): void {
+    console.log('writing cell value: %O', obj);
     const div = this.cell.nativeElement;
     this.renderer.setProperty(div, 'textContent', obj);
-  }
-
-  onInput($event) {
-    this.onChange($event.target.textContent);
   }
 }

@@ -3,7 +3,7 @@ import {FormGridModule} from '../app/form-grid/form-grid.module';
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {tap} from 'rxjs/operators';
+import {filter, pluck, tap} from 'rxjs/operators';
 import {action} from '@storybook/addon-actions';
 
 storiesOf('FormGrid', module)
@@ -33,9 +33,9 @@ storiesOf('FormGrid', module)
   selector: 'test-cell',
   template: `
       <div style="margin-bottom: 20px;">Simple Cell Example</div>
-      <form [formGroup]="theForm">
-          <app-cell formControlName="name"></app-cell>
-      </form>
+<!--      <form [formGroup]="theForm">-->
+<!--          <app-cell formControlName="name"></app-cell>-->
+<!--      </form>-->
 
       <div>Value: {{this.theForm.valueChanges | async | json}}</div>
   `,
@@ -70,6 +70,7 @@ export type User = {
   template: `
       <div style="margin-bottom: 20px;" (click)="formClick.emit(theForm)">Simple FormGrid Example</div>
       <button (click)="addUser()">Add</button>
+      <button (click)="removeLastUser()">Remove Last</button>
       <button (click)="getFormValue()">Get Form Results</button>
       <div [formGroup]="theForm">
           <input type="text" formControlName="id" style="margin-bottom: 20px;">
@@ -97,8 +98,25 @@ export class TestFormGridHeaderComponent implements OnInit {
       users: new FormControl([]),
       id: ''
     });
+
+    function isNotEmpty(user?: User): boolean {
+      if (user) {
+        return user.email.length > 0 || user.lastName.length > 0 || user.firstName.length > 0 || user.age > 0;
+      }
+      return false;
+    }
+
     this.theForm.valueChanges.pipe(
-      tap(val => this.formValue.emit(JSON.stringify(val))),
+      pluck('users'),
+      filter((val: User[]) => isNotEmpty(val.length ? val[val.length - 1] : null)),
+      tap(_ => this.addUser())
+    )
+      .subscribe();
+
+    this.theForm.valueChanges.pipe(
+      pluck('users'),
+      filter((val: User[]) => val.length > 2 ? !isNotEmpty(val[val.length - 2]): false),
+      tap(_ => this.removeLastUser())
     )
       .subscribe();
   }
@@ -106,6 +124,14 @@ export class TestFormGridHeaderComponent implements OnInit {
   addUser() {
     const users = [...this.theForm.get('users').value, this._buildUser()];
     this.theForm.patchValue({users});
+  }
+
+  removeLastUser() {
+    const users = [...this.theForm.get('users').value];
+    if (users.length) {
+      users.pop();
+      this.theForm.patchValue({users});
+    }
   }
 
   private _buildUser(): User {

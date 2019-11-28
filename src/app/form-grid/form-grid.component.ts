@@ -4,13 +4,15 @@ import {
   ChangeDetectorRef,
   Component,
   ContentChildren,
-  forwardRef, Input,
+  forwardRef,
+  OnDestroy,
   OnInit,
   QueryList
 } from '@angular/core';
-import {ControlValueAccessor, FormArray, FormBuilder, FormControl, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ControlValueAccessor, FormArray, FormControl, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {tap} from 'rxjs/operators';
 import {GridMetadataDirective} from './grid-metadata.directive';
+import {Subscription} from 'rxjs';
 
 export const ARRAY_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -25,8 +27,9 @@ export const ARRAY_ACCESSOR: any = {
   styleUrls: ['./form-grid.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FormGridComponent implements OnInit, AfterContentInit, ControlValueAccessor {
+export class FormGridComponent implements OnInit, OnDestroy, AfterContentInit, ControlValueAccessor {
   @ContentChildren(GridMetadataDirective) gridMetadata: QueryList<GridMetadataDirective>;
+  currentValueChangesSubscription: Subscription;
   columns: string[];
   entities: any[];
   onChange;
@@ -50,13 +53,13 @@ export class FormGridComponent implements OnInit, AfterContentInit, ControlValue
 
   writeValue(objs: any[]): void {
     console.log('writing objs: %O', objs);
+    this.cleanupSubscriptions();
     this.form = new FormArray([]);
     for (const obj of objs) {
       this.form.push(new FormControl(obj));
     }
-    this.form.valueChanges.pipe(
+    this.currentValueChangesSubscription = this.form.valueChanges.pipe(
       tap(_ => this.onChange(this.form.value)),
-      tap(_ => console.log('formGrid on change: %O', _))
     )
       .subscribe(); // todo: unsubscribe me
     setTimeout(() => this.cd.detectChanges());
@@ -65,5 +68,15 @@ export class FormGridComponent implements OnInit, AfterContentInit, ControlValue
   ngAfterContentInit(): void {
     this.columns = this.gridMetadata.map(directive => directive.gridMetadata);
     console.log('Form grid is using columns: %O', this.columns);
+  }
+
+  ngOnDestroy(): void {
+    this.cleanupSubscriptions();
+  }
+
+  private cleanupSubscriptions() {
+    if (this.currentValueChangesSubscription) {
+      this.currentValueChangesSubscription.unsubscribe();
+    }
   }
 }

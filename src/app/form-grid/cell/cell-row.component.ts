@@ -1,6 +1,7 @@
-import {Component, forwardRef, Input, OnInit} from '@angular/core';
+import {Component, forwardRef, Input, OnDestroy, OnInit} from '@angular/core';
 import {ControlValueAccessor, FormBuilder, FormControl, FormGroup, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {tap} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
 
 export const ROW_VALUES_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -14,9 +15,10 @@ export const ROW_VALUES_ACCESSOR: any = {
   templateUrl: './cell-row.component.html',
   styleUrls: ['./cell-row.component.scss']
 })
-export class CellRowComponent implements OnInit, ControlValueAccessor {
+export class CellRowComponent implements OnInit, OnDestroy, ControlValueAccessor {
   row: FormGroup;
   onChange;
+  private currentRowSubscription: Subscription;
   @Input() columns: string[];
 
   constructor(private fb: FormBuilder) {
@@ -32,11 +34,16 @@ export class CellRowComponent implements OnInit, ControlValueAccessor {
   registerOnTouched(fn: any): void {
   }
 
+  ngOnDestroy(): void {
+    this.cleanupSubscriptions();
+  }
+
   setDisabledState(isDisabled: boolean): void {
   }
 
   writeValue(obj: any): void {
     console.log('writing row: %O', obj);
+    this.cleanupSubscriptions();
     this.row = new FormGroup({});
     Object.entries(obj).forEach(([key, value]) => {
       console.log('adding fc for key: %O val: %O', key, value);
@@ -48,7 +55,10 @@ export class CellRowComponent implements OnInit, ControlValueAccessor {
     console.log('state of formModel(row)', this.row);
   }
 
-  onInput($event) {
-    this.onChange($event.target.textContent);
+  private cleanupSubscriptions() {
+    if (this.currentRowSubscription) {
+      this.currentRowSubscription.unsubscribe();
+    }
   }
+
 }

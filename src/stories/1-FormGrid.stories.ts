@@ -105,20 +105,6 @@ export class TestFormGridHeaderComponent implements OnInit {
       }
       return false;
     }
-
-    this.theForm.valueChanges.pipe(
-      pluck('users'),
-      filter((val: User[]) => isNotEmpty(val.length ? val[val.length - 1] : null)),
-      tap(_ => this.addUser())
-    )
-      .subscribe();
-
-    this.theForm.valueChanges.pipe(
-      pluck('users'),
-      filter((val: User[]) => val.length > 2 ? !isNotEmpty(val[val.length - 2]): false),
-      tap(_ => this.removeLastUser())
-    )
-      .subscribe();
   }
 
   addUser() {
